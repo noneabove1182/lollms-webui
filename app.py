@@ -203,7 +203,9 @@ class LoLLMsWebUI(LoLLMsAPPI):
 
         self.add_endpoint("/get_lollms_version", "get_lollms_version", self.get_lollms_version, methods=["GET"])
         self.add_endpoint("/get_lollms_webui_version", "get_lollms_webui_version", self.get_lollms_webui_version, methods=["GET"])
-        
+        self.add_endpoint(
+            "/new_discussion", "new_discussion", self.new_discussion, methods=["GET"]
+        )
 
         self.add_endpoint("/reload_binding", "reload_binding", self.reload_binding, methods=["POST"])
         self.add_endpoint("/update_software", "update_software", self.update_software, methods=["GET"])
@@ -1498,7 +1500,12 @@ class LoLLMsWebUI(LoLLMsAPPI):
             ASCIIColors.yellow("Message deleted")
             return jsonify({"status":True,"new_rank": new_rank})
 
+    def new_discussion(self):
+        title = request.args.get("title")
+        timestamp = self.create_new_discussion(title)
 
+        # Return a success response
+        return json.dumps({"id": self.current_discussion.discussion_id, "time": timestamp, "welcome_message":self.personality.welcome_message, "sender":self.personality.name})
 
     def set_binding(self):
         data = request.get_json()
