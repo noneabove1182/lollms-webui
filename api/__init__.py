@@ -727,6 +727,15 @@ class LoLLMsAPPI(LollmsApplication):
     def prepare_reception(self, client_id):
         self.connections[client_id]["generated_text"] = ""
         self.nb_received_tokens = 0
+    
+    def create_new_discussion(self, title):
+        self.current_discussion = self.db.create_discussion(title)
+        # Get the current timestamp
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Chatbot conditionning
+        self.condition_chatbot()
+        return timestamp
 
 
     def prepare_query(self, client_id, message_id=-1, is_continue=False):
