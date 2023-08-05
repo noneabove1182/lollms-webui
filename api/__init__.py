@@ -721,8 +721,26 @@ class LoLLMsAPPI(LollmsApplication):
         except Exception as e:
             print("Couldn't download file:", str(e))
 
+    def condition_chatbot(self):
+        if self.current_discussion is None:
+            self.current_discussion = self.db.load_last_discussion()
 
-   
+        if self.personality.welcome_message!="":
+            message_type = MSG_TYPE.MSG_TYPE_FULL.value# if self.personality.include_welcome_message_in_disucssion else MSG_TYPE.MSG_TYPE_FULL_INVISIBLE_TO_AI.value
+            message_id = self.current_discussion.add_message(
+                self.personality.name, self.personality.welcome_message,
+                message_type,
+                0,
+                -1,
+                binding= self.config["binding_name"],
+                model = self.config["model_name"], 
+                personality=self.config["personalities"][self.config["active_personality_id"]]
+            )
+
+            self.current_ai_message_id = message_id
+        else:
+            message_id = 0
+        return message_id
 
     def prepare_reception(self, client_id):
         self.connections[client_id]["generated_text"] = ""
